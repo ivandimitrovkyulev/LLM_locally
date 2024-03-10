@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "llm-locally"
+version = "0.1.0"
+description = ""
+authors = ["Ivan Kyulev <ivandkyulev@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+ollama = "^0.1.7"
+transformers = "^4.38.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
