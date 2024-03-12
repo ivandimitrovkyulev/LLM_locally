@@ -1,42 +1,34 @@
 #! /usr/bin/env python3
-import signal
 import ollama
 from ollama._types import RequestError
 
-
-stop_message = False
-
-
-def handler():
-    global stop_message
-    stop_message = False
+from src.cli import parser
 
 
-# Register the signal handler for SIGTSTP (Ctrl+S)
-ctrl_s_signal = signal.signal(signal.SIGTSTP, handler)
+args = parser.parse_args()
 
 
-print(f"Started ollama prompt. Enter your messages after '>>>' sign. To stop message response ")
+print(f"Started ollama prompt. Enter your messages after '>>>' sign. To stop message press 'ctrl+C'")
 while True:
     try:
         message = input(f">>> ").strip()
-        stream = ollama.chat(
-            model='llama2',
-            messages=[{'role': 'user', 'content': f'{message}'}],
-            stream=True,
-        )
+        try:
+            stream = ollama.chat(
+                model='llama2',
+                messages=[{'role': 'user', 'content': f'{message}'}],
+                stream=True,
+            )
 
-        for chunk in stream:
-            if stop_message:
-                print(ctrl_s_signal)
-                break
-            else:
+            for chunk in stream:
                 print(chunk['message']['content'], end='', flush=True)
 
-        print("\n")
+            print("\n")
 
-    except RequestError:
-        print(f"Messages must not be empty.")
+        except RequestError:
+            print(f"\nMessages must not be empty.")
+
+        except KeyboardInterrupt:
+            print(f"\nResponse interrupted.")
 
     except KeyboardInterrupt:
         exit(print("\nClosing down."))
